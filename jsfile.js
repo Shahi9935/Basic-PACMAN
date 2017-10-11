@@ -21,14 +21,16 @@ var ghost={
   speed:5,
   psize:32,
   dirx:0,
-  diry:0
+  diry:0,
+  flash:0
 }
 var powerdot={
   x:10,
   y:10,
   powerup:false,
-  pcountdown:0,
-  ghostNum:0
+  countdown:0,
+  ghostNum:0,
+  ghosteat:false
 }
 var ctx = canvas.getContext("2d");
 canvas.height=400;
@@ -105,7 +107,7 @@ function render(){
   ctx.fillStyle= '#000';
   ctx.fillRect(0,0,600,400);
 
-  if(!powerdot.powerup){
+  if(!powerdot.powerup&&powerdot.countdown<5){
     powerdot.powerup=true;
     powerdot.x=myRandom(520)+30;
     powerdot.y=myRandom(320)+30;
@@ -120,9 +122,12 @@ function render(){
   }
   if(ghost.moving<0){
     ghost.moving = (myRandom(40))+myRandom(1);
-    ghost.speed = myRandom(3)+1;
+    ghost.speed = myRandom(2)+1;
     ghost.dirx=0;
     ghost.diry=0;
+    if(powerdot.ghosteat){
+      ghost.speed=ghost.speed*-1;
+    }
     if(ghost.moving%2==0){
       if(player.x<ghost.x){
         ghost.dirx =-ghost.speed;
@@ -155,13 +160,32 @@ function render(){
     if((player.x<=powerdot.x+9)&&(powerdot.x<=(player.x+32))&&(player.y<=powerdot.y+9)&&(powerdot.y<=(player.y+32))){
       powerdot.powerup=false;
       powerdot.countdown=500;
-      ghost.ghostNum=powerdot.pacFace;
+      powerdot.ghostNum=ghost.pacFace;
       ghost.pacFace=384;
       powerdot.x=0;
       powerdot.y=0;
+      powerdot.ghosteat=true;
+      // console.log("Now");
+    }
+if(powerdot.ghosteat==true&&powerdot.countdown<=500 ){
+  // console.log("Inside powerup");
+  powerdot.countdown--;
+  if(ghost.flash==0){
+  ghost.flash=32;
+  }
+  else{
+    ghost.flash=0;
+  }
+    if(powerdot.countdown<0){
+      powerdot.ghosteat=false;
+      ghost.pacFace=powerdot.ghostNum;
+      ghost.flash=0;
     }
 
-    if(powerdot.powerup){
+  }
+
+    if(powerdot.powerup==true){
+      // console.log("abhi");
       ctx.fillStyle="#00ffff";
       ctx.beginPath();
       ctx.arc(powerdot.x,powerdot.y,10,0,Math.PI*2,true);
@@ -170,7 +194,7 @@ function render(){
     }
 
 
-  ctx.drawImage(mImg,ghost.pacFace,0,32,32,ghost.x,ghost.y,ghost.psize,ghost.psize);
+  ctx.drawImage(mImg,ghost.pacFace,ghost.flash,32,32,ghost.x,ghost.y,ghost.psize,ghost.psize);
   ctx.drawImage(mImg,player.pacFace,player.pacDir,32,32,player.x,player.y,player.psize,player.psize);//320,0 specifies cooridnates in pac.png from which we haveto cut a width of 32 by 32 the paste it at 10,10 on canvas with width and height 32 and 32
   ctx.font="20px Comic Sans MS";
   ctx.fillStyle="white";
