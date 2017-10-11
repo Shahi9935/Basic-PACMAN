@@ -122,7 +122,7 @@ function render(){
   }
   if(ghost.moving<0){
     ghost.moving = (myRandom(40))+myRandom(1);
-    ghost.speed = myRandom(2)+1;
+    ghost.speed = myRandom(1)+1;
     ghost.dirx=0;
     ghost.diry=0;
     if(powerdot.ghosteat){
@@ -156,7 +156,21 @@ function render(){
       ghost.y=368;
     }
 
-    //Checking collision
+    //Checking collision ghost
+    if((player.x<=ghost.x+29)&&(ghost.x<=(player.x+28))&&(player.y<=ghost.y+31)&&(ghost.y<=(player.y+31))){
+if(powerdot.ghosteat){//Player scores
+score++;
+}
+else{//Enemy scores
+gscore++;
+}
+player.x=10;player.y=10;
+ghost.x=300;
+ghost.y=200;
+powerdot.countdown=0;
+    }
+
+    //Checking collision powerball
     if((player.x<=powerdot.x+9)&&(powerdot.x<=(player.x+32))&&(player.y<=powerdot.y+9)&&(powerdot.y<=(player.y+32))){
       powerdot.powerup=false;
       powerdot.countdown=500;
@@ -198,7 +212,7 @@ if(powerdot.ghosteat==true&&powerdot.countdown<=500 ){
   ctx.drawImage(mImg,player.pacFace,player.pacDir,32,32,player.x,player.y,player.psize,player.psize);//320,0 specifies cooridnates in pac.png from which we haveto cut a width of 32 by 32 the paste it at 10,10 on canvas with width and height 32 and 32
   ctx.font="20px Comic Sans MS";
   ctx.fillStyle="white";
-  ctx.fillText("PACMAN: "+score+" vs Ghost: "+gscore,372,18);
+  ctx.fillText("PACMAN: "+score+" vs Ghost: "+gscore,352,18);
 }
 
 document.body.appendChild(canvas);
