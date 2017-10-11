@@ -23,6 +23,13 @@ var ghost={
   dirx:0,
   diry:0
 }
+var powerdot={
+  x:10,
+  y:10,
+  powerup:false,
+  pcountdown:0,
+  ghostNum:0
+}
 var ctx = canvas.getContext("2d");
 canvas.height=400;
 canvas.width=600;
@@ -98,6 +105,12 @@ function render(){
   ctx.fillStyle= '#000';
   ctx.fillRect(0,0,600,400);
 
+  if(!powerdot.powerup){
+    powerdot.powerup=true;
+    powerdot.x=myRandom(520)+30;
+    powerdot.y=myRandom(320)+30;
+  }
+
   if(!Ghost){
     ghost.ghostNum=myRandom(5);
     ghost.pacFace=ghost.ghostNum*64;
@@ -137,6 +150,26 @@ function render(){
     if(ghost.y<0){
       ghost.y=368;
     }
+
+    //Checking collision
+    if((player.x<=powerdot.x+9)&&(powerdot.x<=(player.x+32))&&(player.y<=powerdot.y+9)&&(powerdot.y<=(player.y+32))){
+      powerdot.powerup=false;
+      powerdot.countdown=500;
+      ghost.ghostNum=powerdot.pacFace;
+      ghost.pacFace=384;
+      powerdot.x=0;
+      powerdot.y=0;
+    }
+
+    if(powerdot.powerup){
+      ctx.fillStyle="#00ffff";
+      ctx.beginPath();
+      ctx.arc(powerdot.x,powerdot.y,10,0,Math.PI*2,true);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+
   ctx.drawImage(mImg,ghost.pacFace,0,32,32,ghost.x,ghost.y,ghost.psize,ghost.psize);
   ctx.drawImage(mImg,player.pacFace,player.pacDir,32,32,player.x,player.y,player.psize,player.psize);//320,0 specifies cooridnates in pac.png from which we haveto cut a width of 32 by 32 the paste it at 10,10 on canvas with width and height 32 and 32
   ctx.font="20px Comic Sans MS";
