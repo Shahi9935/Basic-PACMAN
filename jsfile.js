@@ -17,9 +17,11 @@ var ghost={
   x:150,
   y:150,
   pacFace:32,
-  pacDir:0,
+  moving:0,
+  speed:5,
   psize:32,
-  speed:5
+  dirx:0,
+  diry:0
 }
 var ctx = canvas.getContext("2d");
 canvas.height=400;
@@ -103,8 +105,39 @@ function render(){
     ghost.y=myRandom(320)+30;
     Ghost=true;
   }
-
-  ctx.drawImage(mImg,ghost.pacFace,ghost.pacDir,32,32,ghost.x,ghost.y,ghost.psize,ghost.psize);
+  if(ghost.moving<0){
+    ghost.moving = (myRandom(40))+myRandom(1);
+    ghost.speed = myRandom(3)+1;
+    ghost.dirx=0;
+    ghost.diry=0;
+    if(ghost.moving%2==0){
+      if(player.x<ghost.x){
+        ghost.dirx =-ghost.speed;
+      }else{
+        ghost.dirx=ghost.speed;
+      }}else{
+      if(player.y<ghost.y){
+        ghost.diry =-ghost.speed;
+      }else{
+        ghost.diry=ghost.speed;
+      }
+    }}
+    ghost.moving--;
+    ghost.x=ghost.x+ghost.dirx;
+    ghost.y=ghost.y+ghost.diry;
+    if(ghost.x>=(568)){
+      ghost.x=0;
+    }
+    if(ghost.y>=(368)){
+      ghost.y=0;
+    }
+    if(ghost.x<0){
+    ghost.x=568;
+    }
+    if(ghost.y<0){
+      ghost.y=368;
+    }
+  ctx.drawImage(mImg,ghost.pacFace,0,32,32,ghost.x,ghost.y,ghost.psize,ghost.psize);
   ctx.drawImage(mImg,player.pacFace,player.pacDir,32,32,player.x,player.y,player.psize,player.psize);//320,0 specifies cooridnates in pac.png from which we haveto cut a width of 32 by 32 the paste it at 10,10 on canvas with width and height 32 and 32
   ctx.font="20px Comic Sans MS";
   ctx.fillStyle="white";
