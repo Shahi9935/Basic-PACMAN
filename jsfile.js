@@ -3,7 +3,7 @@
 // ctx.fillText("hello world",10,150);
 var canvas = document.createElement("canvas");//creating using js
 var score=0;
-var Ghost = false;
+var Ghost = false,Ghost2=false;
 var gscore=0;
 var player={
   x:10,
@@ -24,12 +24,24 @@ var ghost={
   diry:0,
   flash:0
 }
+var ghost2={
+  x:150,
+  y:150,
+  pacFace:32,
+  moving:0,
+  speed:5,
+  psize:32,
+  dirx:0,
+  diry:0,
+  flash:0
+}
 var powerdot={
   x:10,
   y:10,
   powerup:false,
   countdown:0,
   ghostNum:0,
+  ghostNum2:0,
   ghosteat:false
 }
 var ctx = canvas.getContext("2d");
@@ -120,9 +132,16 @@ function render(){
     ghost.y=myRandom(320)+30;
     Ghost=true;
   }
+  if(!Ghost2){
+    ghost2.ghostNum=myRandom(5);
+    ghost2.pacFace=ghost2.ghostNum*64;
+    ghost2.x=myRandom(550);
+    ghost2.y=myRandom(320)+30;
+    Ghost2=true;
+  }
   if(ghost.moving<0){
     ghost.moving = (myRandom(40))+myRandom(1);
-    ghost.speed = myRandom(1)+1;
+    ghost.speed = myRandom(2)+1;
     ghost.dirx=0;
     ghost.diry=0;
     if(powerdot.ghosteat){
@@ -140,9 +159,34 @@ function render(){
         ghost.diry=ghost.speed;
       }
     }}
+
+    if(ghost2.moving<0){
+      ghost2.moving = (myRandom(40))+myRandom(1);
+      ghost2.speed = myRandom(2)+1;
+      ghost2.dirx=0;
+      ghost2.diry=0;
+      if(powerdot.ghosteat){
+        ghost2.speed=ghost2.speed*-1;
+      }
+      if(ghost2.moving%2==0){
+        if(player.x<ghost2.x){
+          ghost2.dirx =-ghost2.speed;
+        }else{
+          ghost2.dirx=ghost2.speed;
+        }}else{
+        if(player.y<ghost2.y){
+          ghost2.diry =-ghost2.speed;
+        }else{
+          ghost2.diry=ghost2.speed;
+        }
+      }}
+
     ghost.moving--;
+    ghost2.moving--;
     ghost.x=ghost.x+ghost.dirx;
     ghost.y=ghost.y+ghost.diry;
+    ghost2.x=ghost2.x+ghost2.dirx;
+    ghost2.y=ghost2.y+ghost2.diry;
     if(ghost.x>=(568)){
       ghost.x=0;
     }
@@ -156,8 +200,21 @@ function render(){
       ghost.y=368;
     }
 
+    if(ghost2.x>=(568)){
+      ghost2.x=0;
+    }
+    if(ghost2.y>=(368)){
+      ghost2.y=0;
+    }
+    if(ghost2.x<0){
+    ghost2.x=568;
+    }
+    if(ghost2.y<0){
+      ghost2.y=368;
+    }
+
     //Checking collision ghost
-    if((player.x<=ghost.x+29)&&(ghost.x<=(player.x+28))&&(player.y<=ghost.y+31)&&(ghost.y<=(player.y+31))){
+    if(((player.x<=ghost.x+29)&&(ghost.x<=(player.x+28))&&(player.y<=ghost.y+31)&&(ghost.y<=(player.y+31)))||((player.x<=ghost2.x+29)&&(ghost2.x<=(player.x+28))&&(player.y<=ghost2.y+31)&&(ghost2.y<=(player.y+31)))){
 if(powerdot.ghosteat){//Player scores
 score++;
 }
@@ -166,7 +223,8 @@ gscore++;
 }
 player.x=10;player.y=10;
 ghost.x=300;
-ghost.y=200;
+ghost.y=200;ghost2.x=300;
+ghost2.y=100;
 powerdot.countdown=0;
     }
 
@@ -175,10 +233,13 @@ powerdot.countdown=0;
       powerdot.powerup=false;
       powerdot.countdown=500;
       powerdot.ghostNum=ghost.pacFace;
+      powerdot.ghostNum2=ghost2.pacFace;
       ghost.pacFace=384;
+      ghost2.pacFace=384;
       powerdot.x=0;
       powerdot.y=0;
       powerdot.ghosteat=true;
+      player.speed=10;
       // console.log("Now");
     }
 if(powerdot.ghosteat==true&&powerdot.countdown<=500 ){
@@ -186,14 +247,19 @@ if(powerdot.ghosteat==true&&powerdot.countdown<=500 ){
   powerdot.countdown--;
   if(ghost.flash==0){
   ghost.flash=32;
+  ghost2.flash=32;
   }
   else{
     ghost.flash=0;
+    ghost2.flash=0;
   }
     if(powerdot.countdown<0){
       powerdot.ghosteat=false;
       ghost.pacFace=powerdot.ghostNum;
+      ghost2.pacFace=powerdot.ghostNum2;
       ghost.flash=0;
+      ghost2.flash=0;
+      player.speed=5;
     }
 
   }
@@ -207,7 +273,7 @@ if(powerdot.ghosteat==true&&powerdot.countdown<=500 ){
       ctx.fill();
     }
 
-
+  ctx.drawImage(mImg,ghost2.pacFace,ghost2.flash,32,32,ghost2.x,ghost2.y,ghost2.psize,ghost2.psize);
   ctx.drawImage(mImg,ghost.pacFace,ghost.flash,32,32,ghost.x,ghost.y,ghost.psize,ghost.psize);
   ctx.drawImage(mImg,player.pacFace,player.pacDir,32,32,player.x,player.y,player.psize,player.psize);//320,0 specifies cooridnates in pac.png from which we haveto cut a width of 32 by 32 the paste it at 10,10 on canvas with width and height 32 and 32
   ctx.font="20px Comic Sans MS";
