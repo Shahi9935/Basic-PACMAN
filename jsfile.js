@@ -3,11 +3,20 @@
 // ctx.fillText("hello world",10,150);
 var canvas = document.createElement("canvas");//creating using js
 var score=0;
+var Ghost = false;
 var gscore=0;
 var player={
   x:10,
   y:10,
   pacFace:320,
+  pacDir:0,
+  psize:32,
+  speed:5
+}
+var ghost={
+  x:150,
+  y:150,
+  pacFace:32,
   pacDir:0,
   psize:32,
   speed:5
@@ -68,6 +77,10 @@ function move(keyclick){
   render();
 }
 
+function myRandom(n){
+  return Math.floor(Math.random()*n);
+}
+
 function checkReady(){
   this.ready=true;
   playgame();
@@ -75,12 +88,23 @@ function checkReady(){
 
 function playgame(){
   render();
+  requestAnimationFrame(playgame);
 
 }
 
 function render(){
   ctx.fillStyle= '#000';
   ctx.fillRect(0,0,600,400);
+
+  if(!Ghost){
+    ghost.ghostNum=myRandom(5);
+    ghost.pacFace=ghost.ghostNum*64;
+    ghost.x=myRandom(550);
+    ghost.y=myRandom(320)+30;
+    Ghost=true;
+  }
+
+  ctx.drawImage(mImg,ghost.pacFace,ghost.pacDir,32,32,ghost.x,ghost.y,ghost.psize,ghost.psize);
   ctx.drawImage(mImg,player.pacFace,player.pacDir,32,32,player.x,player.y,player.psize,player.psize);//320,0 specifies cooridnates in pac.png from which we haveto cut a width of 32 by 32 the paste it at 10,10 on canvas with width and height 32 and 32
   ctx.font="20px Comic Sans MS";
   ctx.fillStyle="white";
