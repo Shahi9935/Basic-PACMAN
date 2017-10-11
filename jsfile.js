@@ -9,7 +9,8 @@ var player={
   y:10,
   pacFace:320,
   pacDir:0,
-  psize:32
+  psize:32,
+  speed:5
 }
 var ctx = canvas.getContext("2d");
 canvas.height=400;
@@ -29,7 +30,41 @@ document.addEventListener("keyup",function(event){
 },false);
 
 function move(keyclick){
-  player.x++;
+  if(37 in keyclick){
+    player.x = player.x-player.speed;
+    player.pacDir=64;
+  }
+  if(38 in keyclick){
+    player.y = player.y-player.speed;
+    player.pacDir=96;
+  }
+  if(39 in keyclick){
+    player.x = player.x+player.speed;
+    player.pacDir=0;
+  }
+  if(40 in keyclick){
+    player.y = player.y+player.speed;
+    player.pacDir=32;
+  }
+  if(player.x>=(568)){
+    player.x=0;
+  }
+  if(player.y>=(368)){
+    player.y=0;
+  }
+  if(player.x<0){
+    player.x=568;
+  }
+  if(player.y<0){
+    player.y=368;
+  }
+  if(player.pacFace==320){
+    player.pacFace=352;
+  }
+  else{
+    player.pacFace=320;
+  }
+
   render();
 }
 
